@@ -1,0 +1,145 @@
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="vector"
+            android:width="512dp"
+            android:height="512dp"
+            android:viewportWidth="512"
+            android:viewportHeight="512">
+            <group
+                android:name="background_1"
+                android:pivotX="420"
+                android:pivotY="256"
+                android:translateX="-87"
+                android:scaleX="0"
+                android:scaleY="0">
+                <path
+                    android:name="path"
+                    android:pathData="M 512 256 C 512 239.46 497.73 209.24 466.39 182 C 448.502 166.614 428.114 154.397 406.11 145.88 C 405.378 145.606 404.57 145.614 403.844 145.903 C 403.118 146.191 402.525 146.739 402.18 147.44 C 402.03 147.73 401.88 148.01 401.71 148.3 L 392.12 164.2 C 375.949 192.124 367.437 223.831 367.449 256.099 C 367.462 288.368 375.997 320.068 392.19 347.98 L 392.42 348.37 L 401.16 364.37 C 401.624 365.22 402.38 365.873 403.288 366.207 C 404.197 366.542 405.196 366.536 406.1 366.19 C 479.63 337.42 512 281.49 512 256 Z M 418.08 255.86 C 414.284 256.356 410.434 255.475 407.233 253.376 C 404.031 251.277 401.687 248.098 400.629 244.419 C 399.57 240.74 399.867 236.801 401.463 233.322 C 403.06 229.843 405.853 227.05 409.332 225.453 C 412.811 223.857 416.75 223.56 420.429 224.619 C 424.108 225.677 427.287 228.021 429.386 231.223 C 431.485 234.424 432.366 238.274 431.87 242.07 C 431.413 245.566 429.812 248.815 427.319 251.309 C 424.825 253.802 421.576 255.403 418.08 255.86 Z"
+                    android:fillColor="@color/animated_icon_color"/>
+            </group>
+            <group
+                android:name="background_2"
+                android:pivotX="200"
+                android:pivotY="256"
+                android:translateX="30"
+                android:scaleX="0"
+                android:scaleY="0">
+                <path
+                    android:name="path_3"
+                    android:pathData="M 335.45 256 C 335.436 218.067 345.471 180.798 364.53 148 L 364.65 147.79 L 369.27 140.12 C 369.717 139.389 369.917 138.533 369.841 137.679 C 369.765 136.826 369.417 136.019 368.848 135.378 C 368.279 134.738 367.519 134.296 366.68 134.12 C 353.735 131.412 340.616 129.611 327.42 128.73 C 325.864 128.63 324.372 128.073 323.13 127.13 C 303.85 112.47 265.63 86.83 226.67 80.24 C 223.106 79.649 219.445 80.283 216.287 82.037 C 213.129 83.79 210.656 86.563 209.273 89.9 C 207.89 93.237 207.678 96.947 208.67 100.42 L 219.29 137.59 C 219.566 138.553 219.471 139.585 219.023 140.481 C 218.575 141.377 217.806 142.073 216.87 142.43 C 180.02 156.12 148.28 181.18 125.13 200.28 C 123.713 201.439 121.941 202.078 120.111 202.089 C 118.28 202.1 116.5 201.482 115.07 200.34 Q 110.35 196.59 105.38 192.95 C 65.74 164 19.17 160.19 17.21 160.05 C 13.881 159.798 10.555 160.595 7.701 162.328 C 4.847 164.061 2.606 166.644 1.293 169.714 C -0.02 172.784 -0.339 176.19 0.38 179.45 C 0.8 181.38 9.57 220.14 32.08 251.06 C 33.093 252.446 33.639 254.118 33.639 255.835 C 33.639 257.552 33.093 259.224 32.08 260.61 C 9.57 291.52 0.8 330.29 0.38 332.22 C -0.339 335.48 -0.02 338.886 1.293 341.956 C 2.606 345.026 4.847 347.609 7.701 349.342 C 10.555 351.075 13.881 351.872 17.21 351.62 C 19.21 351.48 65.74 347.62 105.33 318.74 Q 110.18 315.18 114.8 311.52 C 116.231 310.379 118.012 309.763 119.842 309.776 C 121.673 309.789 123.445 310.429 124.86 311.59 C 148.11 330.78 179.91 355.87 216.86 369.59 C 217.794 369.947 218.561 370.641 219.009 371.535 C 219.456 372.428 219.553 373.458 219.28 374.42 L 208.62 411.6 C 207.628 415.073 207.84 418.783 209.223 422.12 C 210.606 425.457 213.079 428.23 216.237 429.983 C 219.395 431.737 223.056 432.371 226.62 431.78 C 243.78 428.88 278.5 418.92 322.67 384.95 C 323.932 383.987 325.447 383.414 327.03 383.3 C 340.21 382.437 353.314 380.666 366.25 378 C 367.067 377.829 367.81 377.406 368.375 376.791 C 368.939 376.176 369.297 375.4 369.399 374.571 C 369.5 373.743 369.34 372.903 368.94 372.17 L 364.43 363.88 C 345.427 331.107 335.427 293.884 335.45 256 Z"
+                    android:fillColor="@color/animated_icon_color"/>
+            </group>
+            <group
+                android:name="foreground_1"
+                android:pivotX="420"
+                android:pivotY="256"
+                android:translateX="-87"
+                android:scaleX="0"
+                android:scaleY="0">
+                <path
+                    android:name="path_4"
+                    android:pathData="M 512 256 C 512 239.46 497.73 209.24 466.39 182 C 448.502 166.614 428.114 154.397 406.11 145.88 C 405.378 145.606 404.57 145.614 403.844 145.903 C 403.118 146.191 402.525 146.739 402.18 147.44 C 402.03 147.73 401.88 148.01 401.71 148.3 L 392.12 164.2 C 375.949 192.124 367.437 223.831 367.449 256.099 C 367.462 288.368 375.997 320.068 392.19 347.98 L 392.42 348.37 L 401.16 364.37 C 401.624 365.22 402.38 365.873 403.288 366.207 C 404.197 366.542 405.196 366.536 406.1 366.19 C 479.63 337.42 512 281.49 512 256 Z M 418.08 255.86 C 414.284 256.356 410.434 255.475 407.233 253.376 C 404.031 251.277 401.687 248.098 400.629 244.419 C 399.57 240.74 399.867 236.801 401.463 233.322 C 403.06 229.843 405.853 227.05 409.332 225.453 C 412.811 223.857 416.75 223.56 420.429 224.619 C 424.108 225.677 427.287 228.021 429.386 231.223 C 431.485 234.424 432.366 238.274 431.87 242.07 C 431.413 245.566 429.812 248.815 427.319 251.309 C 424.825 253.802 421.576 255.403 418.08 255.86 Z"
+                    android:fillColor="@color/primary"/>
+            </group>
+            <group
+                android:name="foreground_2"
+                android:pivotX="200"
+                android:pivotY="256"
+                android:translateX="30"
+                android:scaleX="0"
+                android:scaleY="0">
+                <path
+                    android:name="path_7"
+                    android:pathData="M 335.45 256 C 335.436 218.067 345.471 180.798 364.53 148 L 364.65 147.79 L 369.27 140.12 C 369.717 139.389 369.917 138.533 369.841 137.679 C 369.765 136.826 369.417 136.019 368.848 135.378 C 368.279 134.738 367.519 134.296 366.68 134.12 C 353.735 131.412 340.616 129.611 327.42 128.73 C 325.864 128.63 324.372 128.073 323.13 127.13 C 303.85 112.47 265.63 86.83 226.67 80.24 C 223.106 79.649 219.445 80.283 216.287 82.037 C 213.129 83.79 210.656 86.563 209.273 89.9 C 207.89 93.237 207.678 96.947 208.67 100.42 L 219.29 137.59 C 219.566 138.553 219.471 139.585 219.023 140.481 C 218.575 141.377 217.806 142.073 216.87 142.43 C 180.02 156.12 148.28 181.18 125.13 200.28 C 123.713 201.439 121.941 202.078 120.111 202.089 C 118.28 202.1 116.5 201.482 115.07 200.34 Q 110.35 196.59 105.38 192.95 C 65.74 164 19.17 160.19 17.21 160.05 C 13.881 159.798 10.555 160.595 7.701 162.328 C 4.847 164.061 2.606 166.644 1.293 169.714 C -0.02 172.784 -0.339 176.19 0.38 179.45 C 0.8 181.38 9.57 220.14 32.08 251.06 C 33.093 252.446 33.639 254.118 33.639 255.835 C 33.639 257.552 33.093 259.224 32.08 260.61 C 9.57 291.52 0.8 330.29 0.38 332.22 C -0.339 335.48 -0.02 338.886 1.293 341.956 C 2.606 345.026 4.847 347.609 7.701 349.342 C 10.555 351.075 13.881 351.872 17.21 351.62 C 19.21 351.48 65.74 347.62 105.33 318.74 Q 110.18 315.18 114.8 311.52 C 116.231 310.379 118.012 309.763 119.842 309.776 C 121.673 309.789 123.445 310.429 124.86 311.59 C 148.11 330.78 179.91 355.87 216.86 369.59 C 217.794 369.947 218.561 370.641 219.009 371.535 C 219.456 372.428 219.553 373.458 219.28 374.42 L 208.62 411.6 C 207.628 415.073 207.84 418.783 209.223 422.12 C 210.606 425.457 213.079 428.23 216.237 429.983 C 219.395 431.737 223.056 432.371 226.62 431.78 C 243.78 428.88 278.5 418.92 322.67 384.95 C 323.932 383.987 325.447 383.414 327.03 383.3 C 340.21 382.437 353.314 380.666 366.25 378 C 367.067 377.829 367.81 377.406 368.375 376.791 C 368.939 376.176 369.297 375.4 369.399 374.571 C 369.5 373.743 369.34 372.903 368.94 372.17 L 364.43 363.88 C 345.427 331.107 335.427 293.884 335.45 256 Z"
+                    android:fillColor="@color/primary"/>
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="background_1">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="scaleX"
+                    android:duration="300"
+                    android:valueFrom="0"
+                    android:valueTo="0.47"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/linear_out_slow_in"/>
+                <objectAnimator
+                    android:propertyName="scaleY"
+                    android:duration="300"
+                    android:valueFrom="0"
+                    android:valueTo="0.47"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/linear_out_slow_in"/>
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="foreground_1">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="scaleX"
+                    android:startOffset="300"
+                    android:duration="200"
+                    android:valueFrom="0"
+                    android:valueTo="0.47"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/linear_out_slow_in"/>
+                <objectAnimator
+                    android:propertyName="scaleY"
+                    android:startOffset="300"
+                    android:duration="200"
+                    android:valueFrom="0"
+                    android:valueTo="0.47"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/linear_out_slow_in"/>
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="background_2">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="scaleX"
+                    android:duration="300"
+                    android:valueFrom="0"
+                    android:valueTo="0.47"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/linear_out_slow_in"/>
+                <objectAnimator
+                    android:propertyName="scaleY"
+                    android:duration="300"
+                    android:valueFrom="0"
+                    android:valueTo="0.47"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/linear_out_slow_in"/>
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="foreground_2">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="scaleX"
+                    android:startOffset="300"
+                    android:duration="200"
+                    android:valueFrom="0"
+                    android:valueTo="0.47"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/linear_out_slow_in"/>
+                <objectAnimator
+                    android:propertyName="scaleY"
+                    android:startOffset="300"
+                    android:duration="200"
+                    android:valueFrom="0"
+                    android:valueTo="0.47"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/linear_out_slow_in"/>
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>
