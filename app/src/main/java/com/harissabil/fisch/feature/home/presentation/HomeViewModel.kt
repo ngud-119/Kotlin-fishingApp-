@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task
 import com.harissabil.fisch.core.common.helper.LocationHelper
 import com.harissabil.fisch.core.common.util.Resource
 import com.harissabil.fisch.core.firebase.firestore.data.mapper.toLogbook
+import com.harissabil.fisch.core.firebase.firestore.domain.model.Logbook
 import com.harissabil.fisch.core.firebase.firestore.domain.usecase.GetLogbooks
 import com.harissabil.fisch.core.location.domain.LocationTracker
 import com.harissabil.fisch.feature.home.domain.usecase.GetWeather
@@ -78,25 +79,29 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun getLogbooks() = viewModelScope.launch {
-        getLogbooks.invoke().collect { response ->
-            when (response) {
-                is Resource.Error -> {
-                    Timber.e("Error: ${response.message}")
-                    _eventFlow.emit(
-                        UIEvent.ShowSnackbar(
-                            response.message ?: "Something went wrong"
-                        )
-                    )
-                }
+//        getLogbooks.invoke().collect { response ->
+//            when (response) {
+//                is Resource.Error -> {
+//                    Timber.e("Error: ${response.message}")
+//                    _eventFlow.emit(
+//                        UIEvent.ShowSnackbar(
+//                            response.message ?: "Something went wrong"
+//                        )
+//                    )
+//                }
+//
+//                is Resource.Loading -> {}
+//                is Resource.Success -> {
+//                    Timber.d("Logbooks: ${response.data}")
+//                    _logbooksState.value =
+//                        _logbooksState.value.copy(logbooks = response.data?.map { it.toLogbook() })
+//                }
+//            }
+//        }
 
-                is Resource.Loading -> {}
-                is Resource.Success -> {
-                    Timber.d("Logbooks: ${response.data}")
-                    _logbooksState.value =
-                        _logbooksState.value.copy(logbooks = response.data?.map { it.toLogbook() })
-                }
-            }
-        }
+        // Placeholder for now
+        _logbooksState.value =
+            _logbooksState.value.copy(logbooks = providePlaceholder())
     }
 
     private fun getWeather() = viewModelScope.launch {
@@ -191,3 +196,56 @@ class HomeViewModel @Inject constructor(
         data class ShowSnackbar(val message: String) : UIEvent()
     }
 }
+
+fun providePlaceholder() : List<Logbook> = listOf(
+    Logbook(
+        id = "1",
+        email = "tes@gmail.com",
+        jenisIkan = "Ikan Hiu",
+        jumlahIkan = 10,
+        tempatPenangkapan = "Florida",
+        waktuPenangkapan = null,
+        fotoIkan = "https://www.fisheries.noaa.gov/s3//2023-06/750x500-Great-White-iStock.jpg",
+        catatan = null
+    ),
+    Logbook(
+        id = "2",
+        email = "tes@gmail.com",
+        jenisIkan = "Gurita",
+        jumlahIkan = 10,
+        tempatPenangkapan = "Laut Pasifik",
+        waktuPenangkapan = null,
+        fotoIkan = "https://www.aquariumofpacific.org/images/made_new/email_images-godzilla_in_new_exhibit_600_q85.jpg",
+        catatan = null
+    ),
+    Logbook(
+        id = "1",
+        email = "tes@gmail.com",
+        jenisIkan = "Piranha",
+        jumlahIkan = 10,
+        tempatPenangkapan = "Amazon",
+        waktuPenangkapan = null,
+        fotoIkan = "https://www.balisafarimarinepark.com/wp-content/uploads/2022/02/foto-ikan-piranha-600x401.jpg?p=27780",
+        catatan = null
+    ),
+    Logbook(
+        id = "1",
+        email = "tes@gmail.com",
+        jenisIkan = "Ikan Mas",
+        jumlahIkan = 10,
+        tempatPenangkapan = "Sungai Deli",
+        waktuPenangkapan = null,
+        fotoIkan = "https://awsimages.detik.net.id/community/media/visual/2021/07/15/ikan-mas-raksasa.jpeg?w=1200",
+        catatan = null
+    ),
+    Logbook(
+        id = "1",
+        email = "tes@gmail.com",
+        jenisIkan = "Ikan Mas",
+        jumlahIkan = 10,
+        tempatPenangkapan = null,
+        waktuPenangkapan = null,
+        fotoIkan = "https://awsimages.detik.net.id/community/media/visual/2021/07/15/ikan-mas-raksasa.jpeg?w=1200",
+        catatan = null
+    )
+)
