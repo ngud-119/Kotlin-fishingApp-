@@ -20,8 +20,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
-import com.harissabil.fisch.feature.home.domain.weather.model.Hourly
-import com.harissabil.fisch.feature.home.domain.weather.model.WeatherCode
+import com.harissabil.fisch.feature.home.domain.model.Hourly
+import com.harissabil.fisch.feature.home.domain.model.WeatherCode
 import com.harissabil.fisch.feature.home.presentation.util.getDateFromDateAndTime
 import com.harissabil.fisch.feature.home.presentation.util.getHour
 import java.util.Calendar

@@ -1,7 +1,7 @@
 package com.harissabil.fisch.feature.home.presentation.util
 
 import com.harissabil.fisch.R
-import com.harissabil.fisch.feature.home.domain.weather.model.WeatherCode
+import com.harissabil.fisch.feature.home.domain.model.WeatherCode
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

@@ -6,9 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.harissabil.fisch.core.common.navigation.Route
-import com.harissabil.fisch.core.common.usecase.ReadAppEntry
-import com.harissabil.fisch.core.common.usecase.GetSignedInUser
-import com.harissabil.fisch.core.common.usecase.ReadUserSignedIn
+import com.harissabil.fisch.core.datastore.local_user_manager.domain.usecase.ReadAppEntry
+import com.harissabil.fisch.core.firebase.auth.domain.usecase.GetSignedInUser
+import com.harissabil.fisch.core.datastore.local_user_manager.domain.usecase.ReadUserSignedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine

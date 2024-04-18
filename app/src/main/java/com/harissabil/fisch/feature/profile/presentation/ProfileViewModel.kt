@@ -2,7 +2,7 @@ package com.harissabil.fisch.feature.profile.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harissabil.fisch.core.common.usecase.GetSignedInUser
+import com.harissabil.fisch.core.firebase.auth.domain.usecase.GetSignedInUser
 import com.harissabil.fisch.core.common.util.Resource
 import com.harissabil.fisch.feature.profile.data.toUserData
 import com.harissabil.fisch.feature.profile.domain.usecase.DeleteUserSignedIn

@@ -1,6 +1,7 @@
 package com.harissabil.fisch.feature.home.presentation.component
 
 import android.content.res.Configuration
+import android.util.DisplayMetrics
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
@@ -31,15 +32,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
-import com.harissabil.fisch.feature.home.domain.weather.model.Current
-import com.harissabil.fisch.feature.home.domain.weather.model.Daily
-import com.harissabil.fisch.feature.home.domain.weather.model.Hourly
-import com.harissabil.fisch.feature.home.domain.weather.model.Weather
-import com.harissabil.fisch.feature.home.domain.weather.model.WeatherCode
+import com.harissabil.fisch.feature.home.domain.model.Current
+import com.harissabil.fisch.feature.home.domain.model.Daily
+import com.harissabil.fisch.feature.home.domain.model.Hourly
+import com.harissabil.fisch.feature.home.domain.model.Weather
+import com.harissabil.fisch.feature.home.domain.model.WeatherCode
+import timber.log.Timber
 
 @Composable
 fun WeatherCard(
@@ -48,6 +51,8 @@ fun WeatherCard(
     city: String?,
     isLoading: Boolean = false,
 ) {
+    val configuration = LocalConfiguration.current
+
     //Scale animation
     val animatedProgress = remember {
         Animatable(initialValue = 1.15f)
@@ -65,7 +70,13 @@ fun WeatherCard(
             scaleY = animatedProgress.value
         )
 
-    var isExpanded by rememberSaveable { mutableStateOf(false) }
+    Timber.i("DensityDpi: ${configuration.densityDpi}")
+
+    var isExpanded by rememberSaveable {
+        mutableStateOf(
+            configuration.densityDpi <= DisplayMetrics.DENSITY_420
+        )
+    }
 
     Box(
         contentAlignment = Alignment.Center,

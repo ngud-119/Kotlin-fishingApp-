@@ -15,13 +15,18 @@ import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
 import com.harissabil.fisch.core.common.helper.LocationHelper
 import com.harissabil.fisch.core.common.util.Resource
+import com.harissabil.fisch.core.firebase.firestore.data.mapper.toLogbook
+import com.harissabil.fisch.core.firebase.firestore.domain.usecase.GetLogbooks
 import com.harissabil.fisch.core.location.domain.LocationTracker
-import com.harissabil.fisch.feature.home.domain.weather.usecase.GetWeather
+import com.harissabil.fisch.feature.home.domain.usecase.GetWeather
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -34,6 +39,7 @@ class HomeViewModel @Inject constructor(
     private val getWeather: GetWeather,
     private val locationTracker: LocationTracker,
     private val locationHelper: LocationHelper,
+    private val getLogbooks: GetLogbooks,
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state.asStateFlow()
@@ -41,8 +47,22 @@ class HomeViewModel @Inject constructor(
     private val _weatherState = MutableStateFlow(WeatherState())
     val weatherState: StateFlow<WeatherState> = _weatherState.asStateFlow()
 
+    private val _logbooksState = MutableStateFlow(LogbooksState())
+    val logbooksState: StateFlow<LogbooksState> = _logbooksState.asStateFlow()
+
     private val _isLocationEnabled = MutableStateFlow(false)
     val isLocationEnabled: StateFlow<Boolean> = _isLocationEnabled.asStateFlow()
+
+    private val _eventFlow = MutableSharedFlow<UIEvent>()
+    val eventFlow: SharedFlow<UIEvent> = _eventFlow.asSharedFlow()
+
+    init {
+        updateLocationServiceStatus()
+        if (_isLocationEnabled.value) {
+            getWeather()
+        }
+        getLogbooks()
+    }
 
     fun onEvent(event: HomeEvent) {
         when (event) {
@@ -53,51 +73,69 @@ class HomeViewModel @Inject constructor(
             )
 
             is HomeEvent.GetWeather -> getWeather()
+            is HomeEvent.GetLogbooks -> getLogbooks()
         }
     }
 
-    private fun getWeather() {
-        viewModelScope.launch {
-            val currentLocation = async { locationTracker.getCurrentLocation() }
-            val (lat, lon) = currentLocation.await()?.latitude to currentLocation.await()?.longitude
-            Timber.tag("HomeViewModel").d("Current Location: ${currentLocation.await()}")
+    private fun getLogbooks() = viewModelScope.launch {
+        getLogbooks.invoke().collect { response ->
+            when (response) {
+                is Resource.Error -> {
+                    Timber.e("Error: ${response.message}")
+                    _eventFlow.emit(
+                        UIEvent.ShowSnackbar(
+                            response.message ?: "Something went wrong"
+                        )
+                    )
+                }
 
-            if (lat == null || lon == null) {
-                _state.value = _state.value.copy(errorMessage = "Location not found")
-                return@launch
+                is Resource.Loading -> {}
+                is Resource.Success -> {
+                    Timber.d("Logbooks: ${response.data}")
+                    _logbooksState.value =
+                        _logbooksState.value.copy(logbooks = response.data?.map { it.toLogbook() })
+                }
             }
-
-            if (lat == _weatherState.value.lat && lon == _weatherState.value.lon) {
-                Timber.tag("HomeViewModel").i("Weather already fetched")
-                return@launch
-            }
-
-            _weatherState.value = _weatherState.value.copy(lat = lat, lon = lon)
-
-//            getWeather.invoke(lat, lon).onEach {
-//                when (it) {
-//                    is Resource.Loading -> {
-//                        _weatherState.value = _weatherState.value.copy(isLoading = true)
-//                    }
-//
-//                    is Resource.Error -> {
-//                        _weatherState.value = _weatherState.value.copy(isLoading = false)
-//                        _state.value =
-//                            _state.value.copy(
-//                                isLoading = false,
-//                                errorMessage = it.message.toString()
-//                            )
-//                    }
-//
-//                    is Resource.Success -> {
-//                        Timber.tag("HomeViewModel").d("Weather: ${it.data}")
-//                        _weatherState.value =
-//                            _weatherState.value.copy(weather = it.data, isLoading = false)
-//                        _state.value = _state.value.copy(isLoading = false)
-//                    }
-//                }
-//            }.launchIn(viewModelScope)
         }
+    }
+
+    private fun getWeather() = viewModelScope.launch {
+        val currentLocation = async { locationTracker.getCurrentLocation() }
+        val (lat, lon) = currentLocation.await()?.latitude to currentLocation.await()?.longitude
+        Timber.tag("HomeViewModel").d("Current Location: ${currentLocation.await()}")
+
+        if (lat == null || lon == null) {
+            return@launch
+        }
+
+        if (lat == _weatherState.value.lat && lon == _weatherState.value.lon) {
+            Timber.tag("HomeViewModel").i("Weather already fetched")
+            return@launch
+        }
+
+        _weatherState.value = _weatherState.value.copy(lat = lat, lon = lon)
+
+        getWeather.invoke(lat, lon).onEach {
+            when (it) {
+                is Resource.Loading -> {
+                    _weatherState.value = _weatherState.value.copy(isLoading = true)
+                }
+
+                is Resource.Error -> {
+                    _weatherState.value = _weatherState.value.copy(isLoading = false)
+                    _state.value =
+                        _state.value.copy(isLoading = false)
+                    _eventFlow.emit(UIEvent.ShowSnackbar(it.message ?: "Something went wrong"))
+                }
+
+                is Resource.Success -> {
+                    Timber.tag("HomeViewModel").d("Weather: ${it.data}")
+                    _weatherState.value =
+                        _weatherState.value.copy(weather = it.data, isLoading = false)
+                    _state.value = _state.value.copy(isLoading = false)
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun pullToRefresh() {
@@ -149,10 +187,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    init {
-        updateLocationServiceStatus()
-        if (_isLocationEnabled.value) {
-            getWeather()
-        }
+    sealed class UIEvent {
+        data class ShowSnackbar(val message: String) : UIEvent()
     }
 }

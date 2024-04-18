@@ -55,9 +55,9 @@ fun ProfileScreen(
     ) {
         ProfileContent(
             userData = state.userData,
-            onSignOut = { viewModel.onEvent(ProfileEvent.SignOut) },
             catches = null,
             visits = null,
+            onEvent = viewModel::onEvent
         )
         if (state.isLoading) {
             FishLoading()
@@ -71,7 +71,7 @@ fun ProfileContent(
     userData: UserData?,
     catches: Int?,
     visits: Int?,
-    onSignOut: () -> Unit,
+    onEvent: (ProfileEvent) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -86,7 +86,7 @@ fun ProfileContent(
         )
         Spacer(modifier = Modifier.weight(1f))
         SignOutButton(
-            onSignOut = onSignOut,
+            onSignOut = { onEvent(ProfileEvent.SignOut) },
             modifier = Modifier.padding(MaterialTheme.spacing.medium)
         )
     }

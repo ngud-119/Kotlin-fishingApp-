@@ -10,9 +10,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import com.harissabil.fisch.core.firebase.auth.domain.AuthRepository
 import com.harissabil.fisch.core.common.navigation.NavGraph
 import com.harissabil.fisch.core.common.theme.FischTheme
+import com.harissabil.fisch.core.firebase.auth.domain.AuthRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

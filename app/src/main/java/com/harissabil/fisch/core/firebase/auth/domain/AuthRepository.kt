@@ -5,15 +5,14 @@ import android.content.IntentSender
 import com.harissabil.fisch.core.common.util.Resource
 import com.harissabil.fisch.core.firebase.auth.data.dto.SignOutResponse
 import com.harissabil.fisch.core.firebase.auth.data.dto.SignedInResponse
-import com.harissabil.fisch.feature.auth.domain.model.SignInResult
 
 interface AuthRepository {
 
     suspend fun signIn(): IntentSender?
 
-    suspend fun signInWithIntent(intent: Intent): Resource<SignInResult>
+    suspend fun signInWithIntent(intent: Intent): Resource<SignedInResponse>
 
-    suspend fun signInWithIntent(token: String): Resource<SignInResult>
+    suspend fun signInWithIntent(token: String): Resource<SignedInResponse>
 
     suspend fun signOut(): Resource<SignOutResponse>
 

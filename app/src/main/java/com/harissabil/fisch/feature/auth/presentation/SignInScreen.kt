@@ -96,11 +96,11 @@ fun SignInScreen(
     DisposableEffect(Unit) {
         loginManager.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onCancel() {
-                viewModel.onError("An unknown error occurred")
+                viewModel.onError("Something went wrong!")
             }
 
             override fun onError(error: FacebookException) {
-                viewModel.onError(error.message ?: "An unknown error occurred")
+                viewModel.onError(error.message ?: "Something went wrong!")
             }
 
             override fun onSuccess(result: LoginResult) {

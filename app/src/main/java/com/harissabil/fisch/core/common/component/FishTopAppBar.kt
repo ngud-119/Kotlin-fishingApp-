@@ -79,27 +79,6 @@ fun FishTopAppBar(
             }
         },
         scrollBehavior = scrollBehavior,
-//        actions = {
-//
-//            IconButton(onClick = onBookMarkClick) {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.ic_bookmark),
-//                    contentDescription = null
-//                )
-//            }
-//            IconButton(onClick = onShareClick) {
-//                Icon(
-//                    imageVector = Icons.Default.Share,
-//                    contentDescription = null
-//                )
-//            }
-//            IconButton(onClick = onBrowsingClick) {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.ic_network),
-//                    contentDescription = null
-//                )
-//            }
-//        },
     )
 }
 

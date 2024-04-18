@@ -45,10 +45,10 @@ import com.harissabil.fisch.core.common.component.FishPermissionButton
 import com.harissabil.fisch.core.common.component.FishTextButton
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
+import com.harissabil.fisch.feature.onboarding.domain.model.pages
 import com.harissabil.fisch.feature.onboarding.presentation.component.OnBoardingCard
 import com.harissabil.fisch.feature.onboarding.presentation.component.OnBoardingImage
 import com.harissabil.fisch.feature.onboarding.presentation.component.PagerIndicator
-import com.harissabil.fisch.feature.onboarding.domain.model.pages
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)

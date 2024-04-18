@@ -6,10 +6,10 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.harissabil.fisch.core.common.util.Resource
-import com.harissabil.fisch.feature.auth.domain.model.SignInResult
-import com.harissabil.fisch.feature.auth.domain.usecase.SaveUserSignedIn
-import com.harissabil.fisch.feature.auth.domain.usecase.SignIn
-import com.harissabil.fisch.feature.auth.domain.usecase.SignInWithIntent
+import com.harissabil.fisch.core.firebase.auth.data.dto.SignedInResponse
+import com.harissabil.fisch.feature.auth.domain.SaveUserSignedIn
+import com.harissabil.fisch.feature.auth.domain.SignIn
+import com.harissabil.fisch.feature.auth.domain.SignInWithIntent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +35,7 @@ class SignInViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow: SharedFlow<UIEvent> = _eventFlow.asSharedFlow()
 
-    private fun onSignInResult(result: Resource<SignInResult>) {
+    private fun onSignInResult(result: Resource<SignedInResponse>) {
         Timber.e("onSignInResult: ${result.data}")
         viewModelScope.launch {
             when (result) {
@@ -48,7 +48,7 @@ class SignInViewModel @Inject constructor(
                     )
                     _eventFlow.emit(
                         UIEvent.ShowSnackbar(
-                            result.message ?: "An unknown error occurred"
+                            result.message ?: "Something went wrong!"
                         )
                     )
                 }

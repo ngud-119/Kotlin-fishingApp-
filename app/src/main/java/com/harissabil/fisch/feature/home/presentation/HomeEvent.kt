@@ -11,4 +11,6 @@ sealed class HomeEvent {
     ) : HomeEvent()
 
     data object GetWeather : HomeEvent()
+
+    data object GetLogbooks : HomeEvent()
 }

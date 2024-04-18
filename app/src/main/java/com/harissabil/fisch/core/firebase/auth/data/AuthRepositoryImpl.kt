@@ -13,7 +13,6 @@ import com.harissabil.fisch.core.common.util.Resource
 import com.harissabil.fisch.core.firebase.auth.data.dto.SignOutResponse
 import com.harissabil.fisch.core.firebase.auth.data.dto.SignedInResponse
 import com.harissabil.fisch.core.firebase.auth.domain.AuthRepository
-import com.harissabil.fisch.feature.auth.domain.model.SignInResult
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import java.util.concurrent.CancellationException
@@ -37,7 +36,7 @@ class AuthRepositoryImpl @Inject constructor(
         return result?.pendingIntent?.intentSender
     }
 
-    override suspend fun signInWithIntent(intent: Intent): Resource<SignInResult> {
+    override suspend fun signInWithIntent(intent: Intent): Resource<SignedInResponse> {
         val credential = oneTapClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
@@ -46,9 +45,10 @@ class AuthRepositoryImpl @Inject constructor(
             val user = auth.signInWithCredential(googleCredentials).await().user
             Resource.Success(
                 data = user?.run {
-                    SignInResult(
+                    SignedInResponse(
                         userId = uid,
                         userName = displayName,
+                        email = email,
                         profilePictureUrl = photoUrl?.toString(),
                     )
                 }
@@ -64,16 +64,17 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signInWithIntent(token: String): Resource<SignInResult> {
+    override suspend fun signInWithIntent(token: String): Resource<SignedInResponse> {
         Timber.e("signInWithIntent: $token")
         val credential = FacebookAuthProvider.getCredential(token)
         return try {
             val user = auth.signInWithCredential(credential).await().user
             Resource.Success(
                 data = user?.run {
-                    SignInResult(
+                    SignedInResponse(
                         userId = uid,
                         userName = displayName,
+                        email = email,
                         profilePictureUrl = photoUrl?.toString(),
                     )
                 }

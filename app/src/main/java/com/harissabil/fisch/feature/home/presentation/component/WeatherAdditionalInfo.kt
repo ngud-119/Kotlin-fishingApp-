@@ -25,9 +25,9 @@ import androidx.compose.ui.unit.dp
 import com.harissabil.fisch.R
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
-import com.harissabil.fisch.feature.home.domain.weather.model.Current
-import com.harissabil.fisch.feature.home.domain.weather.model.CurrentUnits
-import com.harissabil.fisch.feature.home.domain.weather.model.WeatherCode
+import com.harissabil.fisch.feature.home.domain.model.Current
+import com.harissabil.fisch.feature.home.domain.model.CurrentUnits
+import com.harissabil.fisch.feature.home.domain.model.WeatherCode
 import kotlin.math.roundToInt
 
 @Composable

@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
-import com.harissabil.fisch.feature.home.domain.weather.model.WeatherCode
+import com.harissabil.fisch.feature.home.domain.model.WeatherCode
 import com.harissabil.fisch.feature.home.presentation.util.getDateFromDate
 import com.harissabil.fisch.feature.home.presentation.util.getWeatherIcon
 import kotlin.math.roundToInt
