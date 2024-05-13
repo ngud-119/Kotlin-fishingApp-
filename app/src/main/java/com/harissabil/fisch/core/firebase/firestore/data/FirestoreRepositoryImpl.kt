@@ -32,7 +32,6 @@ class FirestoreRepositoryImpl @Inject constructor(
     private val storageRepository: StorageRepository,
 ) : FirestoreRepository {
 
-    val tes = "tes"
     override fun getLogbooks(): Flow<Resource<List<LogbookResponse>>> = callbackFlow {
         val snapshotListener =
             logbooksRef.whereEqualTo(
