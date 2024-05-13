@@ -1,9 +1,12 @@
 package com.harissabil.fisch.feature.auth.presentation
 
-import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -29,24 +31,37 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.CreateCredentialCancellationException
+import androidx.credentials.exceptions.CreateCredentialException
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.harissabil.fisch.R
-import com.harissabil.fisch.core.common.component.FishLoading
+import com.harissabil.fisch.core.common.component.FishFullscreenLoading
 import com.harissabil.fisch.core.common.component.FishTextButton
-import com.harissabil.fisch.feature.auth.presentation.component.SignInButton
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
+import com.harissabil.fisch.core.common.util.Constant.WEB_CLIENT_ID
+import com.harissabil.fisch.feature.auth.presentation.component.SignInButton
+import com.harissabil.fisch.feature.home.presentation.component.TermOfServiceAndPrivacyPolicyText
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.security.MessageDigest
+import java.util.UUID
 
 @Composable
 fun SignInScreen(
@@ -56,14 +71,7 @@ fun SignInScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartIntentSenderForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                viewModel.signInWithIntent(result)
-            }
-        }
-    )
+    val primaryColor = MaterialTheme.colorScheme.primary.toArgb()
 
     LaunchedEffect(key1 = state.isSignInSuccessful) {
         if (state.isSignInSuccessful) {
@@ -84,7 +92,9 @@ fun SignInScreen(
         }
     }
 
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
     val loginManager = LoginManager.getInstance()
     val callbackManager = remember { CallbackManager.Factory.create() }
     val facebookLauncher = rememberLauncherForActivityResult(
@@ -106,7 +116,7 @@ fun SignInScreen(
             override fun onSuccess(result: LoginResult) {
                 scope.launch {
                     val token = result.accessToken.token
-                    viewModel.signInWithIntent(token)
+                    viewModel.signInWithFacebook(token)
                 }
             }
 
@@ -122,12 +132,30 @@ fun SignInScreen(
     ) { paddingValues ->
         SignInContent(
             modifier = Modifier.padding(paddingValues),
-            onGoogleSignIn = { viewModel.signIn(launcher) },
+            onGoogleSignIn = {
+                scope.launch {
+                    getGoogleIdToken(context)?.let { viewModel.signInWithGoogle(it) }
+                }
+            },
             onFacebookSignIn = {
                 facebookLauncher.launch(listOf("email", "public_profile"))
             },
             onNotNow = {
                 viewModel.onError("Coming soon")
+            },
+            onTermOfServiceClick = {
+                onLinkClick(
+                    context,
+                    primaryColor,
+                    "https://github.com/harissabil/Fishlog/blob/main/docs/terms-of-service.md"
+                )
+            },
+            onPrivacyPolicyClick = {
+                onLinkClick(
+                    context,
+                    primaryColor,
+                    "https://github.com/harissabil/Fishlog/blob/main/docs/privacy-policy.md"
+                )
             },
             isLoading = state.isLoading
         )
@@ -140,6 +168,8 @@ fun SignInContent(
     onGoogleSignIn: () -> Unit,
     onFacebookSignIn: () -> Unit,
     onNotNow: () -> Unit,
+    onTermOfServiceClick: () -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
     isLoading: Boolean,
 ) {
     Box(
@@ -193,19 +223,80 @@ fun SignInContent(
                         onClick = onNotNow
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-                    Text(
-                        text = "By continuing, you agree to our Terms of Service and Privacy Policy",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                        textAlign = TextAlign.Center
+                    TermOfServiceAndPrivacyPolicyText(
+                        onTermOfServiceClick = onTermOfServiceClick,
+                        onPrivacyPolicyClick = onPrivacyPolicyClick
                     )
                 }
             }
         }
         if (isLoading) {
-            FishLoading()
+            FishFullscreenLoading()
         }
     }
+}
+
+private suspend fun getGoogleIdToken(context: Context): String? {
+    try {
+        val credentialManager = CredentialManager.create(context)
+
+        val rawNonce = UUID.randomUUID().toString()
+        val bytes = rawNonce.toByteArray()
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
+
+        val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(WEB_CLIENT_ID)
+            .setNonce(hashedNonce)
+            .build()
+
+        val request: GetCredentialRequest = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+
+        val result = credentialManager.getCredential(
+            context = context,
+            request = request
+        )
+
+        val credential = result.credential
+
+        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+
+        return googleIdTokenCredential.idToken
+    } catch (e: CreateCredentialCancellationException) {
+        //do nothing, the user chose not to save the credential
+        Timber.tag("Credential").v("User cancelled the save")
+        return null
+    } catch (e: CreateCredentialException) {
+        Timber.tag("Credential").v("Credential save error")
+        return null
+    } catch (e: GetCredentialCancellationException) {
+        Timber.tag("Credential").v("User cancelled the get credential")
+        return null
+    } catch (e: Exception) {
+        Timber.tag("Credential").e("Error getting credential")
+        return null
+    }
+}
+
+private fun onLinkClick(context: Context, colorPrimary: Int, url: String) {
+    val customTabsIntent: CustomTabsIntent = CustomTabsIntent.Builder()
+        .setDefaultColorSchemeParams(
+            CustomTabColorSchemeParams.Builder()
+                .setToolbarColor(colorPrimary)
+                .build()
+        )
+        .setUrlBarHidingEnabled(false)
+        .setShowTitle(true)
+        .build()
+    customTabsIntent.intent.putExtra(
+        Intent.EXTRA_REFERRER,
+        Uri.parse("android-app://" + context.packageName)
+    )
+    customTabsIntent.launchUrl(context, Uri.parse(url))
 }
 
 @Preview(showBackground = true)
@@ -218,6 +309,8 @@ private fun SignInContentPreview() {
                 onGoogleSignIn = {},
                 onFacebookSignIn = {},
                 onNotNow = {},
+                onTermOfServiceClick = {},
+                onPrivacyPolicyClick = {},
                 isLoading = false
             )
         }

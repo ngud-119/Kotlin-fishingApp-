@@ -1,7 +1,7 @@
 package com.harissabil.fisch.core.firebase.auth.di
 
 import android.content.Context
-import com.google.android.gms.auth.api.identity.Identity
+import androidx.credentials.CredentialManager
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.harissabil.fisch.core.firebase.auth.data.AuthRepositoryImpl
@@ -21,7 +21,7 @@ object AuthRepositoryModule {
         @ApplicationContext context: Context,
     ): AuthRepository {
         return AuthRepositoryImpl(
-            oneTapClient = Identity.getSignInClient(context),
+            credentialManager = CredentialManager.create(context),
             auth = Firebase.auth
         )
     }

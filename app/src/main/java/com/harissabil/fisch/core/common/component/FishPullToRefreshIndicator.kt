@@ -7,8 +7,9 @@ import androidx.compose.animation.core.animateValue
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -53,8 +54,9 @@ fun FishPullToRefreshIndicator(
         scaleFraction = 1f
         alphaFraction = 1f
     }
-    Image(
+    Icon(
         painter = painterResource(id = R.drawable.fish_loading),
+        tint = MaterialTheme.colorScheme.primary,
         contentDescription = "refreshing",
         modifier = Modifier
             .graphicsLayer {

@@ -1,15 +1,12 @@
 package com.harissabil.fisch.feature.auth.presentation
 
-import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.harissabil.fisch.core.common.util.Resource
 import com.harissabil.fisch.core.firebase.auth.data.dto.SignedInResponse
 import com.harissabil.fisch.feature.auth.domain.SaveUserSignedIn
-import com.harissabil.fisch.feature.auth.domain.SignIn
-import com.harissabil.fisch.feature.auth.domain.SignInWithIntent
+import com.harissabil.fisch.feature.auth.domain.SignInWithFacebook
+import com.harissabil.fisch.feature.auth.domain.SignInWithGoogle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,8 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SignInViewModel @Inject constructor(
     private val saveUserSignedIn: SaveUserSignedIn,
-    private val signInWithIntent: SignInWithIntent,
-    private val signIn: SignIn,
+    private val signInWithFacebook: SignInWithFacebook,
+    private val signInWithGoogle: SignInWithGoogle,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SignInState())
@@ -68,40 +65,19 @@ class SignInViewModel @Inject constructor(
         }
     }
 
-    fun signInWithIntent(result: ActivityResult) {
+    fun signInWithGoogle(token: String) {
         _state.value = _state.value.copy(isLoading = true)
         viewModelScope.launch {
-            val signInResult = signInWithIntent.invoke(
-                intent = result.data ?: return@launch
-            )
+            val signInResult = signInWithGoogle.invoke(token)
             onSignInResult(signInResult)
         }
     }
 
-    fun signInWithIntent(token: String) {
+    fun signInWithFacebook(token: String) {
         _state.value = _state.value.copy(isLoading = true)
         viewModelScope.launch {
-            val signInResult = signInWithIntent.invoke(token)
+            val signInResult = signInWithFacebook.invoke(token)
             onSignInResult(signInResult)
-        }
-    }
-
-    fun signIn(
-        launcher: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>,
-    ) {
-        if (_state.value.isInSignInProcess) {
-            Timber.d("signIn: Already in sign in process")
-            return
-        }
-        viewModelScope.launch {
-            _state.value = _state.value.copy(isInSignInProcess = true)
-            Timber.d("signIn: Starting sign in process")
-            val signInIntentSender = signIn()
-            launcher.launch(
-                IntentSenderRequest.Builder(
-                    signInIntentSender ?: return@launch
-                ).build()
-            )
         }
     }
 

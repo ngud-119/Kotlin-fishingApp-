@@ -3,6 +3,8 @@ package com.harissabil.fisch.core.common.component
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,19 +16,20 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun FishButton(
+    modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
     enabled: Boolean = true,
 ) {
-
     Button(
+        modifier = modifier,
         onClick = onClick,
         shape = RoundedCornerShape(size = 8.dp),
         enabled = enabled
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
             modifier = Modifier.animateContentSize()
         )
     }
@@ -34,19 +37,19 @@ fun FishButton(
 
 @Composable
 fun FishPermissionButton(
+    modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
     enabled: Boolean = true,
 ) {
-
     FilledTonalButton(
+        modifier = modifier,
         onClick = onClick,
         shape = RoundedCornerShape(size = 8.dp),
         enabled = enabled
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
             modifier = Modifier.animateContentSize()
         )
     }
@@ -54,18 +57,20 @@ fun FishPermissionButton(
 
 @Composable
 fun FishTextButton(
+    modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
+    color: ButtonColors? = null,
 ) {
     TextButton(
         modifier = Modifier.then(modifier),
         onClick = onClick,
         shape = RoundedCornerShape(size = 8.dp),
+        colors = color ?: ButtonDefaults.textButtonColors()
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+            modifier = Modifier.animateContentSize()
         )
     }
 }

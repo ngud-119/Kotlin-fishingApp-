@@ -10,6 +10,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Cache
+import okhttp3.CertificatePinner
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -71,6 +72,13 @@ object NetworkModule {
     fun provideCache(@ApplicationContext context: Context): Cache =
         Cache(context.cacheDir, CACHE_SIZE)
 
+    private const val HOST_NAME = "api.open-meteo.com"
+    private val certificatePinner = CertificatePinner.Builder()
+        .add(HOST_NAME, "sha256/Mg8VP+/mow0f1wW03lfDgVBJ4271IlltuzOgV2Pc6WU=")
+        .add(HOST_NAME, "sha256/jQJTbIh0grw0/1TkHSumWb+Fs0Ggogr621gT3PvPKG0=")
+        .add(HOST_NAME, "sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=")
+        .build()
+
     @Provides
     @Singleton
     fun provideOkHttpClient(
@@ -83,6 +91,7 @@ object NetworkModule {
             .addInterceptor(offlineInterceptor)
             .addNetworkInterceptor(internetInterceptor)
             .addInterceptor(httpLoggingInterceptor)
+            .certificatePinner(certificatePinner)
             .cache(cache)
             .build()
     }

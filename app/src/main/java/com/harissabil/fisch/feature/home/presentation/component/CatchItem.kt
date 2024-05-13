@@ -49,7 +49,7 @@ fun CatchItem(
 
     Box(
         modifier = Modifier
-            .size(width = 154.dp, height = 140.dp)
+            .size(width = 140.dp, height = 140.dp)
             .clip(MaterialTheme.shapes.large)
             .clickable { onClick(logbook) }
             .then(modifier),

@@ -3,6 +3,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#216487</color>
+    <color name="splash_icon_color">#216487</color>
     <color name="splash_background">#F6FAFE</color>
     <color name="animated_icon_color">#99dddddd</color>
+    <color name="branding_image_color">#181C20</color>
+    <color name="github_color">#24292f</color>
 </resources>

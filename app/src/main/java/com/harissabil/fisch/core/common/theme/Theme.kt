@@ -2,7 +2,9 @@ package com.harissabil.fisch.core.common.theme
 
 import android.app.Activity
 import android.os.Build
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -111,12 +113,61 @@ fun FischTheme(
             window.statusBarColor = Color.Transparent.toArgb()
             window.navigationBarColor = Color.Transparent.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars =
+                !darkTheme
         }
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = colorScheme.switch(),
         typography = Typography,
         content = content
     )
 }
+
+@Composable
+private fun animateColor(targetValue: Color) =
+    animateColorAsState(
+        targetValue = targetValue,
+        label = "AnimateColor"
+    ).value
+
+@Composable
+fun ColorScheme.switch() = copy(
+    primary = animateColor(primary),
+    onPrimary = animateColor(onPrimary),
+    primaryContainer = animateColor(primaryContainer),
+    onPrimaryContainer = animateColor(onPrimaryContainer),
+    inversePrimary = animateColor(inversePrimary),
+    secondary = animateColor(secondary),
+    onSecondary = animateColor(onSecondary),
+    secondaryContainer = animateColor(secondaryContainer),
+    onSecondaryContainer = animateColor(onSecondaryContainer),
+    tertiary = animateColor(tertiary),
+    onTertiary = animateColor(onTertiary),
+    tertiaryContainer = animateColor(tertiaryContainer),
+    onTertiaryContainer = animateColor(onTertiaryContainer),
+    background = animateColor(background),
+    onBackground = animateColor(onBackground),
+    surface = animateColor(surface),
+    onSurface = animateColor(onSurface),
+    surfaceVariant = animateColor(surfaceVariant),
+    onSurfaceVariant = animateColor(onSurfaceVariant),
+    surfaceTint = animateColor(surfaceTint),
+    inverseSurface = animateColor(inverseSurface),
+    inverseOnSurface = animateColor(inverseOnSurface),
+    error = animateColor(error),
+    onError = animateColor(onError),
+    errorContainer = animateColor(errorContainer),
+    onErrorContainer = animateColor(onErrorContainer),
+    outline = animateColor(outline),
+    outlineVariant = animateColor(outlineVariant),
+    scrim = animateColor(scrim),
+    surfaceBright = animateColor(surfaceBright),
+    surfaceDim = animateColor(surfaceDim),
+    surfaceContainer = animateColor(surfaceContainer),
+    surfaceContainerLowest = animateColor(surfaceContainerLowest),
+    surfaceContainerLow = animateColor(surfaceContainerLow),
+    surfaceContainerHigh = animateColor(surfaceContainerHigh),
+    surfaceContainerHighest = animateColor(surfaceContainerHighest),
+)

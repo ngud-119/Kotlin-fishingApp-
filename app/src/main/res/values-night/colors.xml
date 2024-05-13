@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primary">#92CEF5</color>
+    <color name="splash_icon_color">#ffffff</color>
     <color name="splash_background">#101417</color>
     <color name="animated_icon_color">#99606060</color>
+    <color name="branding_image_color">#DFE3E7</color>
+    <color name="github_color">#fff</color>
 </resources>

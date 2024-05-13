@@ -6,7 +6,5 @@ import javax.inject.Inject
 class GetMaps @Inject constructor(
     private val firestoreRepository: FirestoreRepository,
 ) {
-    operator fun invoke() {
-        //TODO("Not yet implemented")
-    }
+    operator fun invoke() = firestoreRepository.getMap()
 }

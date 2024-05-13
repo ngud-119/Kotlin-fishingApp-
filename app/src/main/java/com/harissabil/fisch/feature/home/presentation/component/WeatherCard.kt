@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,6 +34,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.harissabil.fisch.core.common.component.FishLoading
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
 import com.harissabil.fisch.feature.home.domain.model.Current
@@ -57,20 +57,23 @@ fun WeatherCard(
     val animatedProgress = remember {
         Animatable(initialValue = 1.15f)
     }
+
     LaunchedEffect(key1 = Unit) {
         animatedProgress.animateTo(
             targetValue = 1f,
-            animationSpec = tween(300, easing = FastOutSlowInEasing)
+            animationSpec = tween(500, easing = FastOutSlowInEasing)
         )
     }
 
     val animatedModifier = modifier
         .graphicsLayer(
             scaleX = animatedProgress.value,
-            scaleY = animatedProgress.value
+            scaleY = animatedProgress.value,
         )
 
-    Timber.i("DensityDpi: ${configuration.densityDpi}")
+    LaunchedEffect(key1 = configuration.densityDpi) {
+        Timber.i("DensityDpi: ${configuration.densityDpi}")
+    }
 
     var isExpanded by rememberSaveable {
         mutableStateOf(
@@ -84,11 +87,11 @@ fun WeatherCard(
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
             .background(color = MaterialTheme.colorScheme.primaryContainer)
-            .clickable { isExpanded = !isExpanded }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable { isExpanded = !isExpanded }
                 .animateContentSize()
                 .padding(MaterialTheme.spacing.medium + MaterialTheme.spacing.extraSmall),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -153,9 +156,11 @@ fun WeatherCard(
                     .matchParentSize()
                     .background(color = MaterialTheme.colorScheme.primaryContainer)
             ) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(vertical = 16.dp),
+                FishLoading(
+                    circleColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    circleSize = 8.dp,
+                    spaceBetween = 6.dp,
+                    travelDistance = 16.dp,
                 )
             }
         }

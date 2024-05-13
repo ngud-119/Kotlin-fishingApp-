@@ -8,6 +8,7 @@ import com.harissabil.fisch.core.firebase.firestore.data.FirestoreRepositoryImpl
 import com.harissabil.fisch.core.firebase.firestore.domain.FirestoreRepository
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.LOGBOOKS
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Constant.MAPS
+import com.harissabil.fisch.core.firebase.storage.domain.StorageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,5 +35,12 @@ object FirestoreModule {
     fun provideFirestoreRepository(
         @Named(LOGBOOKS) logbooksRef: CollectionReference,
         @Named(MAPS) mapsRef: CollectionReference,
-    ): FirestoreRepository = FirestoreRepositoryImpl(logbooksRef, mapsRef, Firebase.auth)
+        storageRepository: StorageRepository,
+    ): FirestoreRepository =
+        FirestoreRepositoryImpl(
+            logbooksRef = logbooksRef,
+            mapsRef = mapsRef,
+            auth = Firebase.auth,
+            storageRepository = storageRepository
+        )
 }

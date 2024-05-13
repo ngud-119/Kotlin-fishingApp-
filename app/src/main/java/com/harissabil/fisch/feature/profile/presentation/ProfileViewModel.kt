@@ -2,8 +2,13 @@ package com.harissabil.fisch.feature.profile.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harissabil.fisch.core.firebase.auth.domain.usecase.GetSignedInUser
 import com.harissabil.fisch.core.common.util.Resource
+import com.harissabil.fisch.core.datastore.preference.domain.AiLanguage
+import com.harissabil.fisch.core.datastore.preference.domain.Theme
+import com.harissabil.fisch.core.datastore.preference.domain.usecase.AiLanguageUseCase
+import com.harissabil.fisch.core.datastore.preference.domain.usecase.ThemeUseCase
+import com.harissabil.fisch.core.firebase.auth.domain.usecase.GetSignedInUser
+import com.harissabil.fisch.core.firebase.firestore.domain.usecase.GetLogbooks
 import com.harissabil.fisch.feature.profile.data.toUserData
 import com.harissabil.fisch.feature.profile.domain.usecase.DeleteUserSignedIn
 import com.harissabil.fisch.feature.profile.domain.usecase.SignOutUser
@@ -15,6 +20,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,6 +31,9 @@ class ProfileViewModel @Inject constructor(
     private val deleteUserSignedIn: DeleteUserSignedIn,
     private val getSignedInUser: GetSignedInUser,
     private val signOutUser: SignOutUser,
+    private val themeUseCase: ThemeUseCase,
+    private val aiLanguageUseCase: AiLanguageUseCase,
+    private val getLogbooks: GetLogbooks,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
@@ -31,11 +42,54 @@ class ProfileViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow: SharedFlow<UIEvent> = _eventFlow.asSharedFlow()
 
+    init {
+        getPreferences()
+        getCatchesAndVisits()
+    }
+
     fun onEvent(event: ProfileEvent) {
         when (event) {
+            is ProfileEvent.ShowMoreOption -> showMoreOption(event.isShow)
+            is ProfileEvent.SetTheme -> setTheme(event.theme)
+            is ProfileEvent.SetAiLanguage -> setAiLanguage(event.aiLanguage)
             ProfileEvent.GetSignedInUser -> getSignedInUser()
             ProfileEvent.SignOut -> onSignOut()
-            ProfileEvent.PullToRefresh -> pullToRefresh()
+        }
+    }
+
+    private fun getCatchesAndVisits() {
+        viewModelScope.launch {
+            getLogbooks.invoke().onEach { logbooks ->
+                val catches = logbooks.data?.sumOf { it.jumlahIkan ?: 0 } ?: 0
+                val visits = logbooks.data?.mapNotNull { it.tempatPenangkapan }?.distinct()?.count()
+                _state.update { it.copy(catches = catches, visits = visits) }
+            }.stateIn(viewModelScope)
+        }
+    }
+
+    private fun getPreferences() = viewModelScope.launch {
+        themeUseCase.getTheme().onEach { theme ->
+            _state.update { it.copy(themeValue = theme.value) }
+        }.stateIn(viewModelScope)
+
+        aiLanguageUseCase.getAiLanguage().onEach { aiLanguage ->
+            _state.update { it.copy(aiLanguageValue = aiLanguage.value) }
+        }.stateIn(viewModelScope)
+    }
+
+    private fun showMoreOption(isShow: Boolean) {
+        _state.value = _state.value.copy(showProfileMoreOptionBottomSheet = isShow)
+    }
+
+    private fun setTheme(theme: Theme) {
+        viewModelScope.launch {
+            themeUseCase.setTheme(theme)
+        }
+    }
+
+    private fun setAiLanguage(aiLanguage: AiLanguage) {
+        viewModelScope.launch {
+            aiLanguageUseCase.setAiLanguage(aiLanguage)
         }
     }
 
@@ -44,8 +98,7 @@ class ProfileViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true)
             when (val user = getSignedInUser.invoke()) {
                 is Resource.Error -> {
-                    _state.value =
-                        _state.value.copy(isLoading = false, pullToRefreshLoading = false)
+                    _state.value = _state.value.copy(isLoading = false)
                     _eventFlow.emit(UIEvent.ShowSnackbar(user.message ?: "An error occurred"))
                 }
 
@@ -57,19 +110,10 @@ class ProfileViewModel @Inject constructor(
                 is Resource.Success -> {
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        pullToRefreshLoading = false,
                         userData = user.data?.toUserData()
                     )
                 }
             }
-        }
-    }
-
-    private fun pullToRefresh() {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(pullToRefreshLoading = true)
-            delay(1000)
-            getSignedInUser()
         }
     }
 

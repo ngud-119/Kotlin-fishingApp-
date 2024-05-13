@@ -1,14 +1,10 @@
 package com.harissabil.fisch.core.firebase.auth.data
 
-import android.content.Intent
-import android.content.IntentSender
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
-import com.google.android.gms.auth.api.identity.SignInClient
+import androidx.credentials.ClearCredentialStateRequest
+import androidx.credentials.CredentialManager
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.harissabil.fisch.core.common.util.Constant.WEB_CLIENT_ID
 import com.harissabil.fisch.core.common.util.Resource
 import com.harissabil.fisch.core.firebase.auth.data.dto.SignOutResponse
 import com.harissabil.fisch.core.firebase.auth.data.dto.SignedInResponse
@@ -19,27 +15,13 @@ import java.util.concurrent.CancellationException
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val oneTapClient: SignInClient,
+    private val credentialManager: CredentialManager,
     private val auth: FirebaseAuth,
 ) : AuthRepository {
 
-    override suspend fun signIn(): IntentSender? {
-        val result = try {
-            oneTapClient.beginSignIn(
-                buildSignInRequest()
-            ).await()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            if (e is CancellationException) throw e
-            null
-        }
-        return result?.pendingIntent?.intentSender
-    }
+    override suspend fun signInWithGoogle(token: String): Resource<SignedInResponse> {
 
-    override suspend fun signInWithIntent(intent: Intent): Resource<SignedInResponse> {
-        val credential = oneTapClient.getSignInCredentialFromIntent(intent)
-        val googleIdToken = credential.googleIdToken
-        val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
+        val googleCredentials = GoogleAuthProvider.getCredential(token, null)
 
         return try {
             val user = auth.signInWithCredential(googleCredentials).await().user
@@ -64,7 +46,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signInWithIntent(token: String): Resource<SignedInResponse> {
+    override suspend fun signInWithFacebook(token: String): Resource<SignedInResponse> {
         Timber.e("signInWithIntent: $token")
         val credential = FacebookAuthProvider.getCredential(token)
         return try {
@@ -92,7 +74,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun signOut(): Resource<SignOutResponse> {
         return try {
-            oneTapClient.signOut().await()
+            credentialManager.clearCredentialState(ClearCredentialStateRequest())
             auth.signOut()
             Resource.Success(data = SignOutResponse(true))
         } catch (e: Exception) {
@@ -123,19 +105,5 @@ class AuthRepositoryImpl @Inject constructor(
                 message = "User is not signed in"
             )
         }
-    }
-
-
-    private fun buildSignInRequest(): BeginSignInRequest {
-        return BeginSignInRequest.Builder()
-            .setGoogleIdTokenRequestOptions(
-                GoogleIdTokenRequestOptions.Builder()
-                    .setSupported(true)
-                    .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId(WEB_CLIENT_ID)
-                    .build()
-            )
-            .setAutoSelectEnabled(true)
-            .build()
     }
 }

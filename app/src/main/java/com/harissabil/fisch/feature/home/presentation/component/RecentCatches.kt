@@ -1,7 +1,10 @@
 package com.harissabil.fisch.feature.home.presentation.component
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,14 +28,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.harissabil.fisch.core.common.component.FishLoading
 import com.harissabil.fisch.core.common.component.FishTextButton
 import com.harissabil.fisch.core.common.theme.FischTheme
 import com.harissabil.fisch.core.common.theme.spacing
 import com.harissabil.fisch.core.firebase.firestore.domain.model.Logbook
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RecentCatches(
     modifier: Modifier = Modifier,
+    isLoading: Boolean,
     logbooks: List<Logbook?>?,
     onViewAllClick: (logbooks: List<Logbook?>?) -> Unit,
     onCatchClick: (logbook: Logbook?) -> Unit,
@@ -63,16 +69,31 @@ fun RecentCatches(
             )
         }
         LazyRow(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize(),
             state = listState,
             horizontalArrangement = if (!logbooks.isNullOrEmpty()) Arrangement.Start else Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (!logbooks.isNullOrEmpty()) {
+            if (isLoading) {
+                item {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.padding(MaterialTheme.spacing.large)
+                    ) {
+                        FishLoading(
+                            circleSize = 8.dp,
+                            spaceBetween = 6.dp,
+                            travelDistance = 16.dp,
+                        )
+                    }
+                }
+            } else if (!logbooks.isNullOrEmpty()) {
 
                 val uniqueRecentCatchList = mutableListOf<Logbook>()
                 var uniqueJenisIkan = ""
-                for (logbook in logbooks) {
+                for (logbook in logbooks.sortedByDescending { it?.waktuPenangkapan }) {
                     if (logbook != null) {
                         if (logbook.jenisIkan != uniqueJenisIkan) {
                             uniqueRecentCatchList.add(logbook)
@@ -84,10 +105,11 @@ fun RecentCatches(
                 item {
                     Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
                 }
-                items(count = uniqueRecentCatchList.size) { index ->
+                items(count = uniqueRecentCatchList.size, key = { it }) { index ->
                     CatchItem(
                         logbook = uniqueRecentCatchList[index],
-                        onClick = onCatchClick
+                        onClick = onCatchClick,
+                        modifier = Modifier.animateItemPlacement()
                     )
                     Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall + MaterialTheme.spacing.small))
                 }
@@ -128,7 +150,12 @@ fun RecentCatches(
 private fun RecentCatchesPreview() {
     FischTheme {
         Surface {
-            RecentCatches(logbooks = emptyList(), onViewAllClick = {}, onCatchClick = {})
+            RecentCatches(
+                logbooks = emptyList(),
+                onViewAllClick = {},
+                onCatchClick = {},
+                isLoading = false
+            )
         }
     }
 }

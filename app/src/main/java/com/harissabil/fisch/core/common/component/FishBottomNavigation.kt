@@ -1,9 +1,6 @@
 package com.harissabil.fisch.core.common.component
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -38,62 +35,47 @@ import com.harissabil.fisch.core.common.theme.spacing
 @Composable
 fun FishBottomNavigation(
     items: List<BottomNavigationItem>,
-    isBottomBarVisible: Boolean,
     selected: Int,
     onItemClick: (Int) -> Unit,
     onFabClick: () -> Unit,
 ) {
-    AnimatedVisibility(
-        visible = isBottomBarVisible,
-        enter = slideInVertically(
-            initialOffsetY = { fullHeight ->
-                fullHeight
-            },
-        ),
-        exit = slideOutVertically(
-            targetOffsetY = { fullHeight ->
-                fullHeight
-            },
-        ),
+    NavigationBar(
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = MaterialTheme.colorScheme.surface,
+        tonalElevation = 10.dp,
     ) {
-        NavigationBar(
-            modifier = Modifier.fillMaxWidth(),
-            containerColor = MaterialTheme.colorScheme.surface,
-            tonalElevation = 10.dp,
-        ) {
-            items.forEachIndexed { index, item ->
-                if (index == 2) {
-                    FloatingActionButton(
-                        onClick = onFabClick,
-                        modifier = Modifier.padding(MaterialTheme.spacing.extraSmall),
-                    ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                    }
+        items.forEachIndexed { index, item ->
+            if (index == 2) {
+                FloatingActionButton(
+                    onClick = onFabClick,
+                    modifier = Modifier.padding(MaterialTheme.spacing.extraSmall),
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
                 }
-                if (index == (items.size / 2)) return@forEachIndexed
-                CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
-                    NavigationBarItem(
-                        selected = index == selected,
-                        onClick = { onItemClick(index) },
-                        icon = {
-                            (if (index == selected) item.selectedIcon else item.unselectedIcon)?.let {
-                                Icon(
-                                    imageVector = it,
-                                    contentDescription = item.text,
-                                )
-                            }
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            indicatorColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.0f)
-                        ),
-                        alwaysShowLabel = true,
-                        label = { item.text?.let { Text(it) } },
-                    )
-                }
+            }
+            if (index == (items.size / 2)) return@forEachIndexed
+            CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+                NavigationBarItem(
+                    selected = index == selected,
+                    onClick = { onItemClick(index) },
+                    icon = {
+                        (if (index == selected) item.selectedIcon else item.unselectedIcon)?.let {
+                            Icon(
+                                imageVector = it,
+                                contentDescription = item.text,
+                            )
+                        }
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        indicatorColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.0f)
+                    ),
+                    alwaysShowLabel = true,
+                    label = { item.text?.let { Text(it) } },
+                )
             }
         }
     }
@@ -138,7 +120,7 @@ private fun FishBottomNavigationPreview() {
                     text = "Profile"
                 ),
             ), selected = 0,
-            isBottomBarVisible = true,
-            onFabClick = {}, onItemClick = {})
+            onItemClick = {}
+        ) {}
     }
 }

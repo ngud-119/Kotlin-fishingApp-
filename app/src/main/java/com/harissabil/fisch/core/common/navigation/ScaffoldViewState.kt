@@ -8,4 +8,5 @@ data class ScaffoldViewState(
     val topAppBarTitle: String? = null,
     @DrawableRes val navigationIcon: Int? = null,
     val onBackClick: (() -> Unit)? = null,
+    val onActionClick: (() -> Unit)? = null,
 )

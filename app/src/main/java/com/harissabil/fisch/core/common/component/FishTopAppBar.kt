@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,6 +22,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -29,6 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.harissabil.fisch.R
 import com.harissabil.fisch.core.common.theme.FischTheme
+import com.harissabil.fisch.core.common.util.AnimatedNavigationIcon
+import com.harissabil.fisch.core.common.util.AnimatedTrailingIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +41,7 @@ fun FishTopAppBar(
     title: String?,
     @DrawableRes navigationIcon: Int? = null,
     onBackClick: (() -> Unit)?,
+    onActionClick: (() -> Unit)?,
     scrollBehavior: TopAppBarScrollBehavior,
     containerColor: Color? = null,
 ) {
@@ -50,37 +56,55 @@ fun FishTopAppBar(
             scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp)
         ),
         title = {
-            title?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(end = 16.dp),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
+            Text(
+                text = title.toString(),
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.SemiBold,
+            )
         },
         navigationIcon = {
-            onBackClick?.let {
-                IconButton(onClick = it) {
+            Box(
+                contentAlignment = Alignment.CenterStart
+            ) {
+                AnimatedNavigationIcon(visible = onBackClick != null) {
+                    IconButton(onClick = onBackClick ?: {}) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                        )
+                    }
+                }
+                AnimatedNavigationIcon(visible = navigationIcon != null) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        painter = painterResource(
+                            id = navigationIcon ?: R.drawable.ic_launcher_foreground
+                        ),
                         contentDescription = null,
+                        modifier = Modifier.size(69.dp)
                     )
                 }
             }
-            navigationIcon?.let {
-                Icon(
-                    painter = painterResource(id = it),
-                    contentDescription = null,
-                    modifier = Modifier.size(69.dp)
-                )
+        },
+        actions = {
+            Box(
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                AnimatedTrailingIcon(visible = onActionClick != null) {
+                    IconButton(onClick = onActionClick ?: {}) {
+                        Icon(
+                            imageVector = Icons.Default.MoreHoriz,
+                            contentDescription = null,
+                        )
+                    }
+                }
             }
         },
         scrollBehavior = scrollBehavior,
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
@@ -93,7 +117,8 @@ private fun FishTopAppBarPreview() {
                 title = "Home",
                 onBackClick = null,
                 navigationIcon = R.drawable.ic_launcher_foreground,
-                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+                onActionClick = null,
             )
         }
     }

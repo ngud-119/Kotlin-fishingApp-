@@ -15,16 +15,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,15 +43,21 @@ import com.harissabil.fisch.core.firebase.firestore.domain.model.Logbook
 import com.harissabil.fisch.feature.home.presentation.component.OpenMeteoCredit
 import com.harissabil.fisch.feature.home.presentation.component.RecentCatches
 import com.harissabil.fisch.feature.home.presentation.component.RecentVisits
+import com.harissabil.fisch.feature.home.presentation.component.ViewAllRecentCatches
+import com.harissabil.fisch.feature.home.presentation.component.ViewAllRecentVisits
 import com.harissabil.fisch.feature.home.presentation.component.WeatherCard
+import com.harissabil.fisch.feature.logbook.common.mapper.toToDetailState
+import com.harissabil.fisch.feature.logbook.common.state.ToDetailState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState,
+    onNavigateToDetail: (ToDetailState) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val weatherState by viewModel.weatherState.collectAsState()
@@ -92,9 +103,13 @@ fun HomeScreen(
 
     LaunchedEffect(key1 = isLocationEnabled) {
         if (!isLocationEnabled) {
-            viewModel.onEvent(HomeEvent.EnableLocationRequest(context = context) {
-                locationRequestLauncher.launch(it)
-            })
+            try {
+                viewModel.onEvent(HomeEvent.EnableLocationRequest(context = context) {
+                    locationRequestLauncher.launch(it)
+                })
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
         }
     }
 
@@ -111,6 +126,34 @@ fun HomeScreen(
         }
     }
 
+    var isViewAllRecentCatchesSheetVisible by rememberSaveable { mutableStateOf(false) }
+    val viewAllRecentCatchesSheetState = rememberModalBottomSheetState()
+
+    if (isViewAllRecentCatchesSheetVisible) {
+        ViewAllRecentCatches(
+            onDismissRequest = { isViewAllRecentCatchesSheetVisible = false },
+            sheetState = viewAllRecentCatchesSheetState,
+            isLoading = logbooksState.isLoading,
+            onItemClick = { it?.let { it1 -> onNavigateToDetail(it1.toToDetailState(isInEditMode = false)) } },
+            logbooks = logbooksState.logbooks,
+        )
+    }
+
+    var isViewAllRecentVisitsSheetVisible by rememberSaveable { mutableStateOf(false) }
+    val viewAllRecentVisitsSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+    )
+
+    if (isViewAllRecentVisitsSheetVisible) {
+        ViewAllRecentVisits(
+            onDismissRequest = { isViewAllRecentVisitsSheetVisible = false },
+            sheetState = viewAllRecentVisitsSheetState,
+            isLoading = logbooksState.isLoading,
+            onItemClick = { it?.let { it1 -> onNavigateToDetail(it1.toToDetailState(isInEditMode = false)) } },
+            logbooks = logbooksState.logbooks,
+        )
+    }
+
     FishPullToRefresh(
         state = pullToRefreshState,
         onRefresh = { viewModel.onEvent(HomeEvent.PullToRefresh) },
@@ -119,7 +162,18 @@ fun HomeScreen(
             weatherState = weatherState,
             context = context,
             city = getReadableLocation(weatherState.lat, weatherState.lon, context),
-            logbooks = logbooksState.logbooks,
+            logbooksState = logbooksState,
+            onCatchClick = {
+                it?.let { logbook ->
+                    onNavigateToDetail(
+                        logbook.toToDetailState(
+                            isInEditMode = false
+                        )
+                    )
+                }
+            },
+            onViewAllCatchesClick = { isViewAllRecentCatchesSheetVisible = true },
+            onViewAllVisitsClick = { isViewAllRecentVisitsSheetVisible = true }
         )
     }
 }
@@ -130,7 +184,10 @@ fun HomeContent(
     context: Context,
     weatherState: WeatherState,
     city: String?,
-    logbooks: List<Logbook?>?,
+    logbooksState: LogbooksState,
+    onCatchClick: (logbook: Logbook?) -> Unit,
+    onViewAllCatchesClick: () -> Unit,
+    onViewAllVisitsClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -147,15 +204,17 @@ fun HomeContent(
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         RecentCatches(
-            logbooks = logbooks,
-            onViewAllClick = {},
-            onCatchClick = {}
+            logbooks = logbooksState.logbooks,
+            onViewAllClick = { onViewAllCatchesClick() },
+            onCatchClick = onCatchClick,
+            isLoading = logbooksState.isLoading
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         RecentVisits(
-            logbooks = logbooks,
-            onViewAllClick = {},
-            onCatchClick = {}
+            logbooks = logbooksState.logbooks,
+            onViewAllClick = { onViewAllVisitsClick() },
+            onCatchClick = onCatchClick,
+            isLoading = logbooksState.isLoading
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
         Spacer(
@@ -183,58 +242,63 @@ private fun HomeContentPreview() {
                 weatherState = WeatherState(),
                 city = "Tokyo",
                 context = LocalContext.current,
-                logbooks = listOf(
-                    Logbook(
-                        id = "1",
-                        email = "tes@gmail.com",
-                        jenisIkan = "Ikan Hiu",
-                        jumlahIkan = 10,
-                        tempatPenangkapan = "Florida",
-                        waktuPenangkapan = null,
-                        fotoIkan = "https://www.fisheries.noaa.gov/s3//2023-06/750x500-Great-White-iStock.jpg",
-                        catatan = null
+                onCatchClick = {},
+                onViewAllCatchesClick = {},
+                onViewAllVisitsClick = {},
+                logbooksState = LogbooksState(
+                    logbooks = listOf(
+                        Logbook(
+                            id = "1",
+                            email = "tes@gmail.com",
+                            jenisIkan = "Ikan Hiu",
+                            jumlahIkan = 10,
+                            tempatPenangkapan = "Florida",
+                            waktuPenangkapan = null,
+                            fotoIkan = "https://www.fisheries.noaa.gov/s3//2023-06/750x500-Great-White-iStock.jpg",
+                            catatan = null
+                        ),
+                        Logbook(
+                            id = "2",
+                            email = "tes@gmail.com",
+                            jenisIkan = "Gurita",
+                            jumlahIkan = 10,
+                            tempatPenangkapan = "Laut Pasifik",
+                            waktuPenangkapan = null,
+                            fotoIkan = "https://www.aquariumofpacific.org/images/made_new/email_images-godzilla_in_new_exhibit_600_q85.jpg",
+                            catatan = null
+                        ),
+                        Logbook(
+                            id = "1",
+                            email = "tes@gmail.com",
+                            jenisIkan = "Piranha",
+                            jumlahIkan = 10,
+                            tempatPenangkapan = "Amazon",
+                            waktuPenangkapan = null,
+                            fotoIkan = "https://www.balisafarimarinepark.com/wp-content/uploads/2022/02/foto-ikan-piranha-600x401.jpg?p=27780",
+                            catatan = null
+                        ),
+                        Logbook(
+                            id = "1",
+                            email = "tes@gmail.com",
+                            jenisIkan = "Ikan Mas",
+                            jumlahIkan = 10,
+                            tempatPenangkapan = "Sungai Deli",
+                            waktuPenangkapan = null,
+                            fotoIkan = "https://awsimages.detik.net.id/community/media/visual/2021/07/15/ikan-mas-raksasa.jpeg?w=1200",
+                            catatan = null
+                        ),
+                        Logbook(
+                            id = "1",
+                            email = "tes@gmail.com",
+                            jenisIkan = "Ikan Mas",
+                            jumlahIkan = 10,
+                            tempatPenangkapan = null,
+                            waktuPenangkapan = null,
+                            fotoIkan = "https://awsimages.detik.net.id/community/media/visual/2021/07/15/ikan-mas-raksasa.jpeg?w=1200",
+                            catatan = null
+                        )
                     ),
-                    Logbook(
-                        id = "2",
-                        email = "tes@gmail.com",
-                        jenisIkan = "Gurita",
-                        jumlahIkan = 10,
-                        tempatPenangkapan = "Laut Pasifik",
-                        waktuPenangkapan = null,
-                        fotoIkan = "https://www.aquariumofpacific.org/images/made_new/email_images-godzilla_in_new_exhibit_600_q85.jpg",
-                        catatan = null
-                    ),
-                    Logbook(
-                        id = "1",
-                        email = "tes@gmail.com",
-                        jenisIkan = "Piranha",
-                        jumlahIkan = 10,
-                        tempatPenangkapan = "Amazon",
-                        waktuPenangkapan = null,
-                        fotoIkan = "https://www.balisafarimarinepark.com/wp-content/uploads/2022/02/foto-ikan-piranha-600x401.jpg?p=27780",
-                        catatan = null
-                    ),
-                    Logbook(
-                        id = "1",
-                        email = "tes@gmail.com",
-                        jenisIkan = "Ikan Mas",
-                        jumlahIkan = 10,
-                        tempatPenangkapan = "Sungai Deli",
-                        waktuPenangkapan = null,
-                        fotoIkan = "https://awsimages.detik.net.id/community/media/visual/2021/07/15/ikan-mas-raksasa.jpeg?w=1200",
-                        catatan = null
-                    ),
-                    Logbook(
-                        id = "1",
-                        email = "tes@gmail.com",
-                        jenisIkan = "Ikan Mas",
-                        jumlahIkan = 10,
-                        tempatPenangkapan = null,
-                        waktuPenangkapan = null,
-                        fotoIkan = "https://awsimages.detik.net.id/community/media/visual/2021/07/15/ikan-mas-raksasa.jpeg?w=1200",
-                        catatan = null
-                    )
-                ),
+                )
             )
         }
     }

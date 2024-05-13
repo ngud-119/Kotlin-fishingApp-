@@ -1,9 +1,11 @@
 package com.harissabil.fisch.core.firebase.firestore.data.dto
 
+import androidx.annotation.Keep
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.PropertyName
 
+@Keep
 data class LogbookResponse(
     @DocumentId
     val id: String? = null,
