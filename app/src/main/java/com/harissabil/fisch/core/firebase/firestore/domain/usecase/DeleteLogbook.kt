@@ -7,6 +7,6 @@ class DeleteLogbook @Inject constructor(
     private val firestoreRepository: FirestoreRepository,
 ) {
     suspend operator fun invoke(logbookId: String) {
-        //TODO("Not yet implemented")
+        firestoreRepository.deleteLogbook(logbookId)
     }
 }
