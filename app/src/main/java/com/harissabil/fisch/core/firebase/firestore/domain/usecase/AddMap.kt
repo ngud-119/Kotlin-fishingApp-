@@ -8,6 +8,6 @@ class AddMap @Inject constructor(
     private val firestoreRepository: FirestoreRepository,
 ) {
     suspend operator fun invoke(map: Map) {
-        //TODO("Not yet implemented")
+        firestoreRepository.addMap(map)
     }
 }
