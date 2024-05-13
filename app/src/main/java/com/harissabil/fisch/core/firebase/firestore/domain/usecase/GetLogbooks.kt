@@ -7,6 +7,6 @@ class GetLogbooks @Inject constructor(
     private val firestoreRepository: FirestoreRepository,
 ) {
     operator fun invoke() {
-        //TODO("Not yet implemented")
+        firestoreRepository.getLogbooks()
     }
 }
