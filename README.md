@@ -14,10 +14,29 @@ Get the latest weather forecast and save your favorite fishing spots with map in
 
 ## Screenshots
 
-<img src="assets/screenshot/1.png?raw=true" width='200'/> <img src="assets/screenshot/2.png?raw=true" width='200'/> <img src="assets/screenshot/3.png?raw=true" width='200'/> <img src="assets/screenshot/4.png?raw=true" width='200'/> <img src="assets/screenshot/5.png?raw=true" width='200'/>
+<table>
+  <tbody>
+    <tr>
+      <td><img src="assets/screenshot/1.png?raw=true"/></td>
+      <td><img src="assets/screenshot/2.png?raw=true"/></td>
+      <td><img src="assets/screenshot/3.png?raw=true"/></td>
+    </tr>
+    <tr>
+      <td><img src="assets/screenshot/4.png?raw=true"/></td>
+      <td><img src="assets/screenshot/5.png?raw=true"/></td>
+    </tr>
+  </tbody>
+</table>
 
-## Setup
-To build this project, you need the latest stable version of [Android Studio](https://developer.android.com/studio).
+## Installation
+
+To install Fishlog, there are two options available:
+
+### Option 1: Download from Play Store
+
+Visit the [Fishlog Play Store page](https://play.google.com/store/apps/details?id=com.harissabil.fisch).
+
+### Option 2: Build from Source
 
 1. Clone or download the project and open it in Android Studio.
 2. Create a `local.properties` file in the project root folder if it doesn't exist.
