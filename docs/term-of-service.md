@@ -25,7 +25,7 @@ profile photos. This information is collected for the purpose of providing and i
 features.
 
 3.2. Your privacy is important to us. We will handle your personal information in accordance with our Privacy Policy,
-which can be found [here](https://github.com/harissabil/Fishlog/blob/main/docs/privacy-policy.md).
+which can be found [here](https://github.com/harissabil/Fishlog/blob/master/docs/privacy-policy.md).
 
 ## 4. User-Generated Content
 

@@ -147,14 +147,14 @@ fun SignInScreen(
                 onLinkClick(
                     context,
                     primaryColor,
-                    "https://github.com/harissabil/Fishlog/blob/main/docs/terms-of-service.md"
+                    "https://github.com/harissabil/Fishlog/blob/master/docs/terms-of-service.md"
                 )
             },
             onPrivacyPolicyClick = {
                 onLinkClick(
                     context,
                     primaryColor,
-                    "https://github.com/harissabil/Fishlog/blob/main/docs/privacy-policy.md"
+                    "https://github.com/harissabil/Fishlog/blob/master/docs/privacy-policy.md"
                 )
             },
             isLoading = state.isLoading

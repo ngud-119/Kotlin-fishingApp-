@@ -65,7 +65,7 @@ fun AboutScreen() {
                 val intent =
                     Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/harissabil/Fishlog/blob/main/docs/terms-of-service.md")
+                        Uri.parse("https://github.com/harissabil/Fishlog/blob/master/docs/term-of-service.md")
                     )
                 context.startActivity(intent)
             },
@@ -73,7 +73,7 @@ fun AboutScreen() {
                 val intent =
                     Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/harissabil/Fishlog/blob/main/docs/privacy-policy.md")
+                        Uri.parse("https://github.com/harissabil/Fishlog/blob/master/docs/privacy-policy.md")
                     )
                 context.startActivity(intent)
             }
