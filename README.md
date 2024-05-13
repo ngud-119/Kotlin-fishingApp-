@@ -3,13 +3,13 @@
   <h1>Fishlog: Angler's Logbook</h1>
 </div>
 
-### 🎣No Fishing No Life!
+### 🎣 No Fishing No Life!
 Fishlog is a fishing app that helps you improve your fishing experience and enjoy fishing trips more than ever.
 
-### 🐟Log Your Catch and Identify Fish
+### 🐟 Log Your Catch and Identify Fish
 Log your catch and identify fish with our AI-powered fish recognition feature.
 
-### ☁️Weather and Map Integration
+### ☁️ Weather and Map Integration
 Get the latest weather forecast and save your favorite fishing spots with map integration based on your location.
 
 ## Screenshots
