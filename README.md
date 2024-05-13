@@ -28,6 +28,11 @@ Get the latest weather forecast and save your favorite fishing spots with map in
   </tbody>
 </table>
 
+## Resources
+
+- Design System: [Figma](https://www.figma.com/design/VngcbkBgQl61ig4quofS8x/Fishlog-Design-System?node-id=305%3A24951&t=CzBpYSH4aaKEsglC-1)
+- Icons: [Material Symbols](https://fonts.google.com/icons)
+
 ## Installation
 
 To install Fishlog, there are two options available:
