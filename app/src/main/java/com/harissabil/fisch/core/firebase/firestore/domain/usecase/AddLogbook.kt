@@ -8,6 +8,6 @@ class AddLogbook @Inject constructor(
     private val firestoreRepository: FirestoreRepository,
 ) {
     suspend operator fun invoke(logbook: Logbook) {
-        //TODO("Not yet implemented")
+        firestoreRepository.addLogbook(logbook)
     }
 }
